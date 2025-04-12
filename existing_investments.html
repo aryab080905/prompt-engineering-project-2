@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Existing {{ investment_name }} - Smart Investment Tracker</title>
+    
+    <!-- Bootstrap CSS (Replit Dark Theme) -->
+    <link rel="stylesheet" href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container py-4">
+        <header class="pb-3 mb-4 border-bottom">
+            <div class="d-flex align-items-center">
+                <a href="{{ url_for('index') }}" class="text-decoration-none">
+                    <i class="fas fa-chart-line text-primary me-3 fs-2"></i>
+                    <h1 class="fs-4">Smart Investment Tracker</h1>
+                </a>
+            </div>
+            <div class="d-flex align-items-center mt-2">
+                <a href="{{ url_for('investment_options', investment_type=investment_type) }}" class="text-decoration-none text-muted">
+                    <i class="fas fa-arrow-left me-2"></i> Back to Options
+                </a>
+                <span class="mx-2 text-muted">|</span>
+                <span class="text-primary text-capitalize">Existing {{ investment_type.replace('_', ' ') }}</span>
+            </div>
+        </header>
+
+        <div class="row justify-content-between mb-4">
+            <div class="col-md-8">
+                <h2 class="text-capitalize">Your {{ investment_name }}</h2>
+                <p class="text-muted">View and manage your existing investments</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a href="{{ url_for('new_investment', investment_type=investment_type) }}" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i> Add New
+                </a>
+            </div>
+        </div>
+
+        {% if investments and investments|length > 0 %}
+            <div class="row row-cols-1 row-cols-md-2 g-4 mb-4">
+                {% for investment in investments %}
+                <div class="col">
+                    <div class="card h-100 investment-item">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">{{ "$" + "{:,.2f}".format(investment.amount) }}</h5>
+                            <span class="badge bg-primary">{{ investment.years }} years</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-6">
+                                    <div class="stat-label text-muted">Interest Rate</div>
+                                    <div class="stat-value text-success">{{ investment.interest_rate }}%</div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="stat-label text-muted">Start Date</div>
+                                    <div class="stat-value">{{ investment.start_date }}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-6">
+                                    <div class="stat-label text-muted">Expected Return</div>
+                                    <div class="stat-value text-warning">{{ investment.expected_return or "-" }}%</div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="stat-label text-muted">Future Value</div>
+                                    <div class="stat-value text-info">
+                                        {% set future_value = investment.amount * (1 + (investment.interest_rate / 100)) ** investment.years %}
+                                        {{ "$" + "{:,.2f}".format(future_value) }}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {% if investment.description %}
+                            <div class="investment-description mt-3">
+                                <p class="card-text">{{ investment.description }}</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="card-footer bg-transparent d-flex justify-content-end">
+                            <a href="{{ url_for('investment_details', investment_id=investment.id) }}" class="btn btn-outline-primary">
+                                View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Summary Chart -->
+            <div class="card mt-4 mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Investment Summary</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="chart-container" style="position: relative; height: 300px;">
+                                <canvas id="investments-distribution-chart"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="chart-container" style="position: relative; height: 300px;">
+                                <canvas id="growth-projection-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="card mb-4">
+                <div class="card-body text-center py-5">
+                    <div class="mb-4">
+                        <i class="fas fa-folder-open fa-4x text-muted"></i>
+                    </div>
+                    <h3 class="mb-3">No Investments Found</h3>
+                    <p class="text-muted mb-4">You don't have any {{ investment_type.replace('_', ' ') }} investments yet.</p>
+                    <a href="{{ url_for('new_investment', investment_type=investment_type) }}" class="btn btn-primary btn-lg px-4">
+                        Create Your First Investment
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+        
+        <footer class="pt-3 mt-4 text-muted border-top">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p>Smart Investment Tracker © 2023 | Powered by OpenAI</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+    
+    {% if investments and investments|length > 0 %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Distribution Chart
+            const distributionCtx = document.getElementById('investments-distribution-chart').getContext('2d');
+            const investments = {{ investments|tojson }};
+            
+            // Prepare data for distribution chart
+            const labels = investments.map(inv => `$${Math.round(inv.amount).toLocaleString()}`);
+            const amounts = investments.map(inv => inv.amount);
+            
+            // Generate colors for each investment
+            const colors = generateColors(investments.length);
+            
+            new Chart(distributionCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: amounts,
+                        backgroundColor: colors,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                color: 'white',
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Investment Distribution',
+                            color: 'white',
+                            font: {
+                                size: 16
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Growth Projection Chart
+            const growthCtx = document.getElementById('growth-projection-chart').getContext('2d');
+            
+            // Find the investment with the longest term for projection
+            const maxYears = Math.max(...investments.map(inv => inv.years));
+            
+            // Create data for each investment's growth over time
+            const datasets = investments.map((inv, index) => {
+                const data = [];
+                for (let year = 0; year <= maxYears; year++) {
+                    const value = inv.amount * Math.pow(1 + (inv.interest_rate / 100), year);
+                    data.push(Math.round(value));
+                }
+                return {
+                    label: `$${Math.round(inv.amount).toLocaleString()}`,
+                    data: data,
+                    borderColor: colors[index],
+                    backgroundColor: colors[index] + '33', // Add alpha for transparency
+                    tension: 0.1
+                };
+            });
+            
+            new Chart(growthCtx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({length: maxYears + 1}, (_, i) => `Year ${i}`),
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                color: 'white',
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Growth Projection',
+                            color: 'white',
+                            font: {
+                                size: 16
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                },
+                                color: 'white'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: 'white'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Function to generate colors
+            function generateColors(count) {
+                const baseColors = [
+                    '#4dc9f6', '#f67019', '#f53794', '#537bc4', '#acc236',
+                    '#166a8f', '#00a950', '#8549ba', '#a4e43f', '#d6a4e3'
+                ];
+                
+                if (count <= baseColors.length) {
+                    return baseColors.slice(0, count);
+                }
+                
+                // If we need more colors than in our base array, generate them
+                const colors = [...baseColors];
+                for (let i = baseColors.length; i < count; i++) {
+                    const h = (i * 137) % 360; // Use golden ratio for even distribution
+                    colors.push(`hsl(${h}, 70%, 60%)`);
+                }
+                
+                return colors;
+            }
+        });
+    </script>
+    {% endif %}
+    
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

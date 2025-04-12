@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investment Details - Smart Investment Tracker</title>
+    
+    <!-- Bootstrap CSS (Replit Dark Theme) -->
+    <link rel="stylesheet" href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container py-4">
+        <header class="pb-3 mb-4 border-bottom">
+            <div class="d-flex align-items-center">
+                <a href="{{ url_for('index') }}" class="text-decoration-none">
+                    <i class="fas fa-chart-line text-primary me-3 fs-2"></i>
+                    <h1 class="fs-4">Smart Investment Tracker</h1>
+                </a>
+            </div>
+            <div class="d-flex align-items-center mt-2">
+                <a href="{{ url_for('existing_investments', investment_type=investment.investment_type) }}" class="text-decoration-none text-muted">
+                    <i class="fas fa-arrow-left me-2"></i> Back to Investments
+                </a>
+                <span class="mx-2 text-muted">|</span>
+                <span class="text-primary">Investment Details</span>
+            </div>
+        </header>
+
+        <div class="row justify-content-between mb-4">
+            <div class="col-md-8">
+                <h2 class="text-capitalize">{{ investment_name }}</h2>
+                <p class="text-muted">Detailed analysis and projections</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a href="{{ url_for('new_investment', investment_type=investment.investment_type) }}" class="btn btn-outline-primary">
+                    <i class="fas fa-plus me-2"></i> Add Another
+                </a>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h5 class="mb-0">Investment Overview</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="investment-summary">
+                            <div class="summary-item mb-3">
+                                <div class="summary-label">Initial Investment</div>
+                                <div class="summary-value">${{ "{:,.2f}".format(investment.amount) }}</div>
+                            </div>
+                            <div class="summary-item mb-3">
+                                <div class="summary-label">Interest Rate</div>
+                                <div class="summary-value">{{ investment.interest_rate }}%</div>
+                            </div>
+                            <div class="summary-item mb-3">
+                                <div class="summary-label">Investment Term</div>
+                                <div class="summary-value">{{ investment.years }} years</div>
+                            </div>
+                            <div class="summary-item mb-3">
+                                <div class="summary-label">Start Date</div>
+                                <div class="summary-value">{{ investment.start_date }}</div>
+                            </div>
+                            <div class="summary-item mb-3">
+                                <div class="summary-label">Expected Return</div>
+                                <div class="summary-value">{{ investment.expected_return or "--" }}%</div>
+                            </div>
+                            {% if investment.description %}
+                            <div class="summary-item mb-3">
+                                <div class="summary-label">Description</div>
+                                <div class="summary-value small">{{ investment.description }}</div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-8">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h5 class="mb-0">Growth Projection</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-4">
+                                <div class="projection-stat text-center">
+                                    <div class="projection-value text-success">
+                                        ${{ "{:,.2f}".format(future_value) }}
+                                    </div>
+                                    <div class="projection-label">Future Value</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="projection-stat text-center">
+                                    <div class="projection-value text-info">
+                                        ${{ "{:,.2f}".format(future_value - investment.amount) }}
+                                    </div>
+                                    <div class="projection-label">Total Return</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="projection-stat text-center">
+                                    <div class="projection-value text-warning">
+                                        +{{ "{:,.2f}".format(growth_percentage) }}%
+                                    </div>
+                                    <div class="projection-label">Growth Rate</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="chart-container" style="position: relative; height: 300px;">
+                            <canvas id="growth-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Year-by-Year Breakdown</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Year</th>
+                                        <th>Beginning Balance</th>
+                                        <th>Interest Earned</th>
+                                        <th>Ending Balance</th>
+                                        <th>Cumulative Return</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for year_data in years_data %}
+                                    <tr>
+                                        <td>{{ year_data.year }}</td>
+                                        {% if year_data.year == 0 %}
+                                            <td>$0.00</td>
+                                            <td>$0.00</td>
+                                        {% else %}
+                                            {% set prev_value = years_data[year_data.year - 1].value %}
+                                            <td>${{ "{:,.2f}".format(prev_value) }}</td>
+                                            <td>${{ "{:,.2f}".format(year_data.value - prev_value) }}</td>
+                                        {% endif %}
+                                        <td>${{ "{:,.2f}".format(year_data.value) }}</td>
+                                        {% if year_data.year == 0 %}
+                                            <td>0.00%</td>
+                                        {% else %}
+                                            <td>{{ "{:,.2f}".format(((year_data.value - investment.amount) / investment.amount) * 100) }}%</td>
+                                        {% endif %}
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h5 class="mb-0">Value Distribution</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container" style="position: relative; height: 250px;">
+                            <canvas id="distribution-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h5 class="mb-0">Performance Metrics</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="metric-item mb-3">
+                                    <div class="metric-label">Annual Return</div>
+                                    <div class="metric-value">{{ investment.interest_rate }}%</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="metric-item mb-3">
+                                    <div class="metric-label">Total Return</div>
+                                    <div class="metric-value">{{ "{:,.2f}".format(growth_percentage) }}%</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="metric-item mb-3">
+                                    <div class="metric-label">Interest Earned</div>
+                                    <div class="metric-value">${{ "{:,.2f}".format(future_value - investment.amount) }}</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="metric-item mb-3">
+                                    <div class="metric-label">Total Value</div>
+                                    <div class="metric-value">${{ "{:,.2f}".format(future_value) }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="progress-container mt-4">
+                            <div class="progress-label d-flex justify-content-between mb-1">
+                                <span>Growth Progress</span>
+                                <span>{{ "{:,.2f}".format(growth_percentage) }}%</span>
+                            </div>
+                            <div class="progress" style="height: 20px;">
+                                <div class="progress-bar bg-success" role="progressbar" 
+                                     style="width: {{ min(100, growth_percentage) }}%;" 
+                                     aria-valuenow="{{ growth_percentage }}" aria-valuemin="0" aria-valuemax="100">
+                                    ${{ "{:,.2f}".format(future_value) }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer class="pt-3 mt-4 text-muted border-top">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p>Smart Investment Tracker © 2023 | Powered by OpenAI</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Growth Chart
+            const growthCtx = document.getElementById('growth-chart').getContext('2d');
+            const yearsData = {{ years_data|tojson }};
+            
+            // Prepare data
+            const labels = yearsData.map(year => `Year ${year.year}`);
+            const values = yearsData.map(year => year.value);
+            
+            new Chart(growthCtx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Investment Value',
+                        data: values,
+                        fill: true,
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `Value: $${context.raw.toLocaleString(undefined, {
+                                        minimumFractionDigits: 2,
+                                        maximumFractionDigits: 2
+                                    })}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                },
+                                color: 'white'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: 'white'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Distribution Chart
+            const distributionCtx = document.getElementById('distribution-chart').getContext('2d');
+            
+            new Chart(distributionCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Principal', 'Interest'],
+                    datasets: [{
+                        data: [
+                            {{ investment.amount }},
+                            {{ future_value - investment.amount }}
+                        ],
+                        backgroundColor: [
+                            'rgba(54, 162, 235, 0.8)',
+                            'rgba(75, 192, 192, 0.8)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                color: 'white'
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const value = context.raw;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((value / total) * 100).toFixed(2);
+                                    return `${context.label}: $${value.toLocaleString(undefined, {
+                                        minimumFractionDigits: 2,
+                                        maximumFractionDigits: 2
+                                    })} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+    
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

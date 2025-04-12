@@ -1,0 +1,240 @@
+/* Custom styling for the investment tracker app */
+
+/* Risk badge styling */
+#risk-badge.badge-low {
+    background-color: var(--bs-success);
+}
+
+#risk-badge.badge-medium {
+    background-color: var(--bs-warning);
+}
+
+#risk-badge.badge-high {
+    background-color: var(--bs-danger);
+}
+
+/* Performance indicators */
+.performance-up {
+    color: var(--bs-success);
+}
+
+.performance-down {
+    color: var(--bs-danger);
+}
+
+/* Chart container */
+#allocation-chart {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Enhance textarea appearance */
+#portfolio-data {
+    resize: vertical;
+    min-height: 150px;
+}
+
+/* Form card to take full height */
+.h-100 {
+    height: 100%;
+}
+
+/* Suggestions list styling */
+#suggestions .list-group-item {
+    background-color: transparent;
+}
+
+/* Performance list items */
+.performer-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+}
+
+/* Loading overlay */
+#loading {
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Enhanced card styling */
+.card {
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+}
+
+/* Remove body padding for lists */
+.card-body:has(.list-group) {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+/* Investment option styling */
+.option-card {
+    border: none;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.option-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Investment type cards */
+.investment-card {
+    transition: transform 0.3s;
+    overflow: hidden;
+    border: none;
+}
+
+.investment-card:hover {
+    transform: translateY(-5px);
+}
+
+.investment-icon {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: var(--bs-primary);
+    color: white;
+    font-size: 1.5rem;
+}
+
+/* Investment detail styling */
+.summary-item {
+    margin-bottom: 1rem;
+}
+
+.summary-label {
+    font-size: 0.875rem;
+    color: var(--bs-secondary);
+    margin-bottom: 0.25rem;
+}
+
+.summary-value {
+    font-size: 1.25rem;
+    font-weight: 500;
+}
+
+/* Projection styling */
+.projection-stat {
+    padding: 1rem;
+    border-radius: 0.5rem;
+    background-color: rgba(33, 37, 41, 0.15);
+}
+
+.projection-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.projection-label {
+    font-size: 0.875rem;
+    color: var(--bs-secondary);
+}
+
+/* Features grid */
+.features-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.feature-item {
+    text-align: center;
+}
+
+.feature-icon {
+    margin-bottom: 1rem;
+}
+
+.option-icon {
+    margin-bottom: 1.5rem;
+    color: var(--bs-primary);
+}
+
+/* Investment item styling */
+.investment-item {
+    transition: transform 0.2s;
+}
+
+.investment-item:hover {
+    transform: translateY(-3px);
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    margin-bottom: 0.25rem;
+}
+
+.stat-value {
+    font-size: 1.125rem;
+    font-weight: 500;
+}
+
+/* Preview stats */
+.preview-stat {
+    text-align: center;
+    padding: 1rem 0.5rem;
+}
+
+.preview-stat-label {
+    font-size: 0.875rem;
+    color: var(--bs-secondary);
+    margin-bottom: 0.25rem;
+}
+
+.preview-stat-value {
+    font-size: 1.25rem;
+    font-weight: 500;
+}
+
+/* Metrics styling */
+.metric-item {
+    margin-bottom: 1rem;
+}
+
+.metric-label {
+    font-size: 0.875rem;
+    color: var(--bs-secondary);
+    margin-bottom: 0.25rem;
+}
+
+.metric-value {
+    font-size: 1.25rem;
+    font-weight: 500;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #343a40;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #495057;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #6c757d;
+}

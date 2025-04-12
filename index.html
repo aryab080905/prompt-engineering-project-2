@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Investment Tracker</title>
+    
+    <!-- Bootstrap CSS (Replit Dark Theme) -->
+    <link rel="stylesheet" href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container py-4">
+        <header class="pb-3 mb-4 border-bottom">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-chart-line text-primary me-3 fs-2"></i>
+                <h1 class="fs-4">Smart Investment Tracker</h1>
+            </div>
+            <p class="text-muted mt-2">AI-powered portfolio analysis and insights</p>
+        </header>
+
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card bg-dark">
+                    <div class="card-body p-5">
+                        <h2 class="card-title mb-4">Complete Investment Analysis</h2>
+                        <p class="card-text mb-4">Get AI-powered insights on your existing portfolio. Our analysis includes allocation breakdown, risk assessment, top performers, and personalized recommendations.</p>
+                        <a href="#portfolio-section" class="btn btn-primary btn-lg mb-3 me-2">Analyze Portfolio</a>
+                        <a href="{{ url_for('investments') }}" class="btn btn-outline-light btn-lg mb-3">Track Investments</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100 text-center">
+                    <div class="card-body p-4 d-flex flex-column justify-content-center">
+                        <div class="features-grid">
+                            <div class="feature-item mb-4">
+                                <div class="feature-icon mb-3">
+                                    <i class="fas fa-chart-pie fa-2x text-primary"></i>
+                                </div>
+                                <h4>Asset Allocation</h4>
+                                <p class="text-muted">Optimal distribution visualization</p>
+                            </div>
+                            <div class="feature-item mb-4">
+                                <div class="feature-icon mb-3">
+                                    <i class="fas fa-chart-line fa-2x text-success"></i>
+                                </div>
+                                <h4>Performance Analysis</h4>
+                                <p class="text-muted">Track top and bottom performers</p>
+                            </div>
+                            <div class="feature-item mb-4">
+                                <div class="feature-icon mb-3">
+                                    <i class="fas fa-shield-alt fa-2x text-warning"></i>
+                                </div>
+                                <h4>Risk Assessment</h4>
+                                <p class="text-muted">Understand your exposure level</p>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon mb-3">
+                                    <i class="fas fa-lightbulb fa-2x text-info"></i>
+                                </div>
+                                <h4>Smart Suggestions</h4>
+                                <p class="text-muted">Personalized improvement tips</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card bg-primary text-white">
+                    <div class="card-body p-4 text-center">
+                        <h2 class="mb-3">New! Manage Individual Investments</h2>
+                        <p class="mb-4">Track specific investments with detailed growth projections and visual analytics</p>
+                        <a href="{{ url_for('investments') }}" class="btn btn-light btn-lg">Explore Investment Types</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="portfolio-section" class="row mb-5">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Portfolio Summary</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center py-3">
+                            <i class="fas fa-file-invoice-dollar fa-4x text-primary mb-3"></i>
+                            <h3 class="mb-3">Track Your Individual Investments</h3>
+                            <p class="lead mb-4">Our simplified approach lets you track each investment separately with visual analytics and detailed projections.</p>
+                            <a href="{{ url_for('investments') }}" class="btn btn-primary btn-lg px-4">
+                                View All Investment Types
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card bg-dark">
+                    <div class="card-body p-4">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h4 class="mb-3">Need help with portfolio analysis?</h4>
+                                <p class="mb-md-0">The portfolio analysis feature has been simplified. Please use the investment tracking system to manage individual investments.</p>
+                            </div>
+                            <div class="col-md-4 text-md-end">
+                                <a href="{{ url_for('investments') }}" class="btn btn-outline-light">
+                                    Go to Investment Tracker
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer class="pt-3 mt-4 text-muted border-top">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p>Smart Investment Tracker © 2023 | Powered by OpenAI</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
